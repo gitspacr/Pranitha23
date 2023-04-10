@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('CLONE SCM') {
+            steps {
+                echo 'cloning code from git hub'
+				git 'https://github.com/wakaleo/game-of-life.git'
+            }
+        }
+		
+		stage('BUILD ARTIFACT') {
+            steps {
+                echo 'build artifact'
+				sh 'ls'
+				sh 'mvn clean install'
+            }
+        }
+		
+		stage('DEPLOY TO TOMCAT') {
+            steps {
+                echo 'deploy to tomcat'
+				deploy adapters: [tomcat9(credentialsId: '68efc47e-7814-41d8-a871-0f322ea7446b',
+				path: '',
+				url: 'http://54.215.62.234:8081')],
+				contextPath: 'FB', war: '**/*.war'
+            }
+        }
+    }
+}
